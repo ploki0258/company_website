@@ -5,64 +5,88 @@ Page.loader("index");
 const options = {
     data() {
         return {
-            items: [
-                {
-                    backgroundImage: "../images/index_bg.jpg",
-                    title: "創新科技解決方案1",
-                    content: "為您的企業打造最佳數位體驗1",
-                    btn: "立即諮詢1",
-                    btnLink: "/contact.html",
-                },
-                {
-                    backgroundImage: "../images/index_bg.jpg",
-                    title: "創新科技解決方案2",
-                    content: "為您的企業打造最佳數位體驗2",
-                    btn: "立即諮詢2",
-                    btnLink: "/about.html",
-                },
-            ],
+            items: [],
             item: {},
             currentIndex: 0,
             action: "in",
+            loop: {
+                isLoop: true,
+                timer: null,
+                duration: 3000,
+            },
+            runLock: false,
         };
     },
     methods: {
+        unRunLock() {
+            setTimeout(() => {
+                this.runLock = false;
+            }, 1000);
+        },
         initItem() {
-            this.item = this.items[this.currentIndex];
+            // 設定預設值，當沒有資料時，不會報錯
+            this.item = this.items[this.currentIndex] || {};
+        },
+        async initItems() {
+            let response = await fetch("/database/swiper_data.json");
+            let data = await response.json();
+            this.items = data;
         },
         setCurrentIndex(index) {
+            if (this.runLock) {
+                return;
+            }
+            this.runLock = true;
+            this.stopLoop();
             this.action = "out";
             setTimeout(() => {
                 this.currentIndex = index;
                 this.initItem();
                 this.action = "in";
+                this.startLoop();
+                this.unRunLock();
             }, 800);
         },
+        /**
+         * 左箭頭(上一個)
+         */
         setPrevCurrentIndex() {
-            console.log(`Prev ${this.currentIndex}`);
-            if (this.currentIndex <= 0) {
-                this.currentIndex = this.items.length - 1;
-            }
-            console.log(`Prev2 ${this.currentIndex}`);
             this.action = "out";
             setTimeout(() => {
-                this.currentIndex--;
+                if (this.currentIndex <= 0) {
+                    this.currentIndex = this.items.length - 1;
+                } else {
+                    this.currentIndex--;
+                }
                 this.initItem();
                 this.action = "in";
+                this.startLoop();
+                this.unRunLock();
             }, 800);
         },
-        setNextCurrentIndex() {
-            console.log(`Next ${this.currentIndex}`);
-
-            if (this.currentIndex >= this.items.length - 1) {
-                this.currentIndex = 0;
+        /**
+         * 右箭頭(下一個)
+         * @param {*} force
+         * @returns
+         */
+        setNextCurrentIndex(force = false) {
+            let isOver = this.currentIndex >= this.items.length - 1;
+            if (this.runLock || (isOver && !force)) {
+                return;
             }
-            console.log(`Next2 ${this.currentIndex}`);
+            this.runLock = true;
+            this.stopLoop();
             this.action = "out";
             setTimeout(() => {
-                this.currentIndex++;
+                if (isOver) {
+                    this.currentIndex = 0;
+                } else {
+                    this.currentIndex++;
+                }
                 this.initItem();
                 this.action = "in";
+                this.startLoop();
+                this.unRunLock();
             }, 800);
         },
         actionAnimationClass() {
@@ -72,9 +96,22 @@ const options = {
             }
             return "animate__backOutRight";
         },
+        startLoop() {
+            clearInterval(this.loop.timer);
+            if (this.loop.isLoop) {
+                this.loop.timer = setInterval(() => {
+                    this.setNextCurrentIndex(true);
+                }, this.loop.duration);
+            }
+        },
+        stopLoop() {
+            clearInterval(this.loop.timer);
+        },
+        animationChange(aniName) {},
     },
-    mounted() {
+    async mounted() {
         console.log("mounted");
+        await this.initItems();
         this.initItem();
     },
 };
