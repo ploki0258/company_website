@@ -3,9 +3,14 @@
 .article {
     padding: 80px 0;
 
+    .list-wrap {
+        min-height: 600px;
+    }
+
     .list {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: min-content;
         gap: 20px;
 
         .item {
@@ -53,7 +58,7 @@
                 }
 
                 &:hover {
-                    color: #0a0880;
+                    color: #02006e;
                     i {
                         transform: translateX(3px);
                     }
@@ -64,7 +69,7 @@
 
     .navigation {
         --color: #006b8e;
-        margin-top: 40px;
+        margin-top: 30px;
 
         .pagination {
             display: flex;
@@ -72,23 +77,45 @@
             align-items: center;
             gap: 10px;
 
-            a {
+            a:not(a:first-child, a:last-child) {
                 --size: 40px;
                 color: var(--color);
-                font-weight: 500;
+                font-weight: 600;
+                font-family: sans-serif;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 width: var(--size);
                 height: var(--size);
                 border-radius: 500px;
-                border: 1px solid #8ac1ff;
+                border: 2px solid #8ac1ff;
                 transition: all 0.3s ease;
 
                 &:hover,
                 &.active {
+                    border: none;
                     background-color: var(--color);
                     color: #fff;
+                    font-size: 1.3rem;
+                }
+            }
+
+            a:first-child {
+                transform-origin: center;
+            }
+
+            a:last-child {
+                transform-origin: center;
+            }
+
+            a:first-child,
+            a:last-child {
+                transform: translateY(2px);
+                transition: all 0.3s ease;
+
+                &:hover {
+                    transform: scale(1.2);
+                    color: var(--color);
                 }
             }
         }

@@ -135,7 +135,7 @@
 }
 
 %page-banner {
-    @include banner-padding(var(--banner-pad-v), 0);
+    @include banner-padding(var(--banner-pad-v), 15px);
     background: linear-gradient(#2463ebe6, rgba(30, 64, 175, 0.9));
     color: #fff;
 
@@ -163,6 +163,7 @@
 %banner-title {
     font-size: 2.5rem;
     text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    text-align: center;
 }
 
 %banner-content {
@@ -170,6 +171,8 @@
     text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
     color: #e3e3e3;
     font-style: italic;
+    text-align: center;
+    line-height: 1.8;
 }
 
 .page-banner {
